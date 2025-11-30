@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=root
+    #   - MONGO_INITDB_ROOT_PASSWORD=secret
+    networks:
+      - imersaoexpert
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+  rabbitmq:
+    build: ./rabbitmq
+    container_name: rabbitmq
+    restart: unless-stopped
+    networks:
+      - imersaoexpert
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 15692:15692
+
+  rabbitmq-create-queues:
+    container_name: rabbitmq-create-queues
+    build: ./create-queues-image
+    depends_on:
+    - rabbitmq
+    networks:
+      - imersaoexpert
+
+networks:
+  imersaoexpert:
+    name: imersaoexpert
+
+volumes:
+  mongo:
+    driver: local
+  
